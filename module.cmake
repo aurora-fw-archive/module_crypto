@@ -6,6 +6,6 @@ endif()
 
 include_directories(${MODULE_CRYPTO_DIR}/include)
 
-add_library (aurora-crypto SHARED ${MODULE_CRYPTO_SOURCE_DIR}/AES.cpp)
+add_library (aurorafw-crypto SHARED ${MODULE_CRYPTO_SOURCE_DIR}/AES.cpp)
 
-set_target_properties(aurora-crypto PROPERTIES OUTPUT_NAME aurora-crypto)
+set_target_properties(aurorafw-crypto PROPERTIES OUTPUT_NAME aurorafw-crypto)
