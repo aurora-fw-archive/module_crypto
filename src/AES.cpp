@@ -1,30 +1,33 @@
-// "src/Crypto/AES.cpp" -*- C++ -*-
-// ┌─┐┬ ┬┬─┐┌─┐┬─┐┌─┐  ┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┬─┐┬┌─ | Powerful, Scalable and Cross Platform Framework
-// ├─┤│ │├┬┘│ │├┬┘├─┤  ├┤ ├┬┘├─┤│││├┤ ││││ │├┬┘├┴┐ | @author Luís Ferreira
-// ┴ ┴└─┘┴└─└─┘┴└─┴ ┴  └  ┴└─┴ ┴┴ ┴└─┘└┴┘└─┘┴└─┴ ┴ | @license GNU Public License v3
-//  Copyright (c) 2016 - Luís Ferreira. All right reserved
-//  More information in: https://github.com/ljmf00/ (Github Page)
+/****************************************************************************
+** ┌─┐┬ ┬┬─┐┌─┐┬─┐┌─┐  ┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┬─┐┬┌─
+** ├─┤│ │├┬┘│ │├┬┘├─┤  ├┤ ├┬┘├─┤│││├┤ ││││ │├┬┘├┴┐
+** ┴ ┴└─┘┴└─└─┘┴└─┴ ┴  └  ┴└─┴ ┴┴ ┴└─┘└┴┘└─┘┴└─┴ ┴
+** A Powerful General Purpose Framework
+** More information in: https://aurora-fw.github.io/
+**
+** Copyright (C) 2017 Aurora Framework, All rights reserved.
+**
+** This file is part of the Aurora Framework. This framework is free
+** software; you can redistribute it and/or modify it under the terms of
+** the GNU Lesser General Public License version 3 as published by the
+** Free Software Foundation and appearing in the file LICENSE included in
+** the packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************/
 
-// This file is part of the Aurora Framework. This framework is free
-// software; you can redistribute it and/or modify it under the
-// terms of the GNU General Public License, v3.
-
-/*
-** @contains	AES Cryptography Algorithm
-** @TODO		Fix the errors!
-*/
-#include <Aurora/Crypto/AES.h>
-#include <Aurora/CLI/Log.h>
-#include <Aurora/TLib/Memory.h>
-#include <Aurora/TLib/Target/CCPlusPlus.h>
-#ifdef AURORA_TARGET_CXX
+#include <AuroraFW/Crypto/AES.h>
+#include <AuroraFW/CLI/Log.h>
+#include <AuroraFW/TLib/Memory.h>
+#include <AuroraFW/TLib/Target/CCPlusPlus.h>
+#ifdef AFW_TARGET_CXX
 #include <iostream>
 #include <cstdlib>
-#elif defined(AURORA_TARGET_CC)
+#elif defined(AFW_TARGET_CC)
 #include <stdlib.h>
 #endif
 
-namespace Aurora
+namespace AuroraFW
 {
 	int AES::nr, AES::nk;
 
@@ -136,7 +139,7 @@ namespace Aurora
 		}
 
 		// All other round keys are found from the previous round keys.
-		while (i < (AURORA_AES_NUM * (nr+1)))
+		while (i < (AFW_AES_NUM * (nr+1)))
 		{
 			for(int j=0;j<4;j++)
 			{
@@ -194,7 +197,7 @@ namespace Aurora
 		{
 			for(j=0;j<4;j++)
 			{
-				stt[j][i] ^= rk[round * AURORA_AES_NUM * 4 + i * AURORA_AES_NUM + j];
+				stt[j][i] ^= rk[round * AFW_AES_NUM * 4 + i * AFW_AES_NUM + j];
 			}
 		}
 	}
@@ -248,10 +251,10 @@ namespace Aurora
 		{
 			t=stt[0][i];
 			Tmp = stt[0][i] ^ stt[1][i] ^ stt[2][i] ^ stt[3][i] ;
-			Tm = stt[0][i] ^ stt[1][i] ; Tm = AURORA_AES_TIME(Tm); stt[0][i] ^= Tm ^ Tmp ;
-			Tm = stt[1][i] ^ stt[2][i] ; Tm = AURORA_AES_TIME(Tm); stt[1][i] ^= Tm ^ Tmp ;
-			Tm = stt[2][i] ^ stt[3][i] ; Tm = AURORA_AES_TIME(Tm); stt[2][i] ^= Tm ^ Tmp ;
-			Tm = stt[3][i] ^ t ; Tm = AURORA_AES_TIME(Tm); stt[3][i] ^= Tm ^ Tmp ;
+			Tm = stt[0][i] ^ stt[1][i] ; Tm = AFW_AES_TIME(Tm); stt[0][i] ^= Tm ^ Tmp ;
+			Tm = stt[1][i] ^ stt[2][i] ; Tm = AFW_AES_TIME(Tm); stt[1][i] ^= Tm ^ Tmp ;
+			Tm = stt[2][i] ^ stt[3][i] ; Tm = AFW_AES_TIME(Tm); stt[2][i] ^= Tm ^ Tmp ;
+			Tm = stt[3][i] ^ t ; Tm = AFW_AES_TIME(Tm); stt[3][i] ^= Tm ^ Tmp ;
 		}
 	}
 
@@ -353,10 +356,10 @@ namespace Aurora
 			d = stt[3][i];
 
 
-			stt[0][i] = AURORA_AES_MULTI(a, 0x0e) ^ AURORA_AES_MULTI(b, 0x0b) ^ AURORA_AES_MULTI(c, 0x0d) ^ AURORA_AES_MULTI(d, 0x09);
-			stt[1][i] = AURORA_AES_MULTI(a, 0x09) ^ AURORA_AES_MULTI(b, 0x0e) ^ AURORA_AES_MULTI(c, 0x0b) ^ AURORA_AES_MULTI(d, 0x0d);
-			stt[2][i] = AURORA_AES_MULTI(a, 0x0d) ^ AURORA_AES_MULTI(b, 0x09) ^ AURORA_AES_MULTI(c, 0x0e) ^ AURORA_AES_MULTI(d, 0x0b);
-			stt[3][i] = AURORA_AES_MULTI(a, 0x0b) ^ AURORA_AES_MULTI(b, 0x0d) ^ AURORA_AES_MULTI(c, 0x09) ^ AURORA_AES_MULTI(d, 0x0e);
+			stt[0][i] = AFW_AES_MULTI(a, 0x0e) ^ AFW_AES_MULTI(b, 0x0b) ^ AFW_AES_MULTI(c, 0x0d) ^ AFW_AES_MULTI(d, 0x09);
+			stt[1][i] = AFW_AES_MULTI(a, 0x09) ^ AFW_AES_MULTI(b, 0x0e) ^ AFW_AES_MULTI(c, 0x0b) ^ AFW_AES_MULTI(d, 0x0d);
+			stt[2][i] = AFW_AES_MULTI(a, 0x0d) ^ AFW_AES_MULTI(b, 0x09) ^ AFW_AES_MULTI(c, 0x0e) ^ AFW_AES_MULTI(d, 0x0b);
+			stt[3][i] = AFW_AES_MULTI(a, 0x0b) ^ AFW_AES_MULTI(b, 0x0d) ^ AFW_AES_MULTI(c, 0x09) ^ AFW_AES_MULTI(d, 0x0e);
 		}
 	}
 	void AES::ic()
@@ -430,7 +433,7 @@ namespace Aurora
 		}
         else
         {
-           Shell::Log(Shell::Error, "aes encrypt: invalid keysize");
+           CLI::Log(CLI::Error, "aes encrypt: invalid keysize");
 		   return NULL;
         }
     }
@@ -463,7 +466,7 @@ namespace Aurora
         }
         else
         {
-			Shell::Log(Shell::Error, "aes decrypt: invalid keysize");
+			CLI::Log(CLI::Error, "aes decrypt: invalid keysize");
         	return NULL;
 		}
     }
