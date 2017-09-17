@@ -29,24 +29,24 @@
 
 namespace AuroraFW
 {
-	int AES::nr, AES::nk;
+	int AES::_nr, AES::_nk;
 
 	/* i - it is the array that holds the CipherText to be decrypted.
 	* o - it is the array that holds the output of the for decryption.
 	* s - the array that holds the intermediate results during decryption.
 	*/
-	unsigned char AES::in[16], AES::out[16], AES::stt[4][4];
+	unsigned char AES::_in[16], AES::_out[16], AES::_stt[4][4];
 
 	// The array that stores the round keys.
-	unsigned char AES::rk[240];
+	unsigned char AES::_rk[240];
 	// The Key input to the AES Program
-	unsigned char AES::key[32];
+	unsigned char AES::_key[32];
 
 	/* @bief	Function to get SubBox Value for AES encryptation
 	** @param	number for value of subbox array
 	** @return	value of suubbox array
 	*/
-	int AES::getSBV(const int n)
+	int AES::_getSBV(const int& n)
 	{
 		const int sb[256] =
 		{
@@ -74,7 +74,7 @@ namespace AuroraFW
 	** @param 	n	number for inverse value of subbox array
 	** @return		value of inverse subbox array
 	*/
-	int AES::getISBV(const int n)
+	int AES::_getISBV(const int& n)
 	{
         const int isb[256] =
         {
@@ -99,7 +99,7 @@ namespace AuroraFW
 		return isb[n];
 	}
 
-	void AES::ke()
+	void AES::_ke()
 	{
 		/*
 		* The round constant word array, _rc[i], contains the values given by
@@ -130,22 +130,22 @@ namespace AuroraFW
 		unsigned char temp[4], k;
 
 		// The first round key is the key itself.
-		for(i=0;i<nk;i++)
+		for(i=0;i<_nk;i++)
 		{
-			rk[i*4]=key[i*4];
-			rk[i*4+1]=key[i*4+1];
-			rk[i*4+2]=key[i*4+2];
-			rk[i*4+3]=key[i*4+3];
+			_rk[i*4]=_key[i*4];
+			_rk[i*4+1]=_key[i*4+1];
+			_rk[i*4+2]=_key[i*4+2];
+			_rk[i*4+3]=_key[i*4+3];
 		}
 
 		// All other round keys are found from the previous round keys.
-		while (i < (AFW_AES_NUM * (nr+1)))
+		while (i < (AFW_AES_NUM * (_nr+1)))
 		{
 			for(int j=0;j<4;j++)
 			{
-				temp[j]= rk[(i-1) * 4 + j];
+				temp[j]= _rk[(i-1) * 4 + j];
 			}
-			if (i % nk == 0)
+			if (i % _nk == 0)
 			{
 				// This function rotates the 4 bytes in a word to the left once.
 				// [a0,a1,a2,a3] becomes [a1,a2,a3,a0]
@@ -164,101 +164,161 @@ namespace AuroraFW
 
 				// Function Subword()
 				{
-					temp[0]=getSBV(temp[0]);
-					temp[1]=getSBV(temp[1]);
-					temp[2]=getSBV(temp[2]);
-					temp[3]=getSBV(temp[3]);
+					temp[0]=_getSBV(temp[0]);
+					temp[1]=_getSBV(temp[1]);
+					temp[2]=_getSBV(temp[2]);
+					temp[3]=_getSBV(temp[3]);
 				}
 
-				temp[0] =  temp[0] ^ _rc[i/nk];
+				temp[0] =  temp[0] ^ _rc[i/_nk];
 			}
-			else if (nk > 6 && i % nk == 4)
+			else if (_nk > 6 && i % _nk == 4)
 			{
 				// Function Subword()
 				{
-					temp[0]=getSBV(temp[0]);
-					temp[1]=getSBV(temp[1]);
-					temp[2]=getSBV(temp[2]);
-					temp[3]=getSBV(temp[3]);
+					temp[0]=_getSBV(temp[0]);
+					temp[1]=_getSBV(temp[1]);
+					temp[2]=_getSBV(temp[2]);
+					temp[3]=_getSBV(temp[3]);
 				}
 			}
-			rk[i*4+0] = rk[(i-nk)*4+0] ^ temp[0];
-			rk[i*4+1] = rk[(i-nk)*4+1] ^ temp[1];
-			rk[i*4+2] = rk[(i-nk)*4+2] ^ temp[2];
-			rk[i*4+3] = rk[(i-nk)*4+3] ^ temp[3];
+			_rk[i*4+0] = _rk[(i-_nk)*4+0] ^ temp[0];
+			_rk[i*4+1] = _rk[(i-_nk)*4+1] ^ temp[1];
+			_rk[i*4+2] = _rk[(i-_nk)*4+2] ^ temp[2];
+			_rk[i*4+3] = _rk[(i-_nk)*4+3] ^ temp[3];
 			i++;
 		}
 	}
 
-	void AES::ark(int round)
+	void AES::_ark(const int& round)
 	{
 		int i,j;
 		for(i=0;i<4;i++)
 		{
 			for(j=0;j<4;j++)
 			{
-				stt[j][i] ^= rk[round * AFW_AES_NUM * 4 + i * AFW_AES_NUM + j];
+				_stt[j][i] ^= _rk[round * AFW_AES_NUM * 4 + i * AFW_AES_NUM + j];
 			}
 		}
 	}
 
-	void AES::sb()
+	void AES::_sb()
 	{
 		for(int i=0;i<4;i++)
 		{
 			for(int j=0;j<4;j++)
 			{
-				stt[i][j] = getSBV(stt[i][j]);
+				_stt[i][j] = _getSBV(_stt[i][j]);
 
 			}
 		}
 	}
 
-	void AES::sr()
+	void AES::_isb()
+	{
+		int i,j;
+		for(i=0;i<4;i++)
+		{
+			for(j=0;j<4;j++)
+			{
+				_stt[i][j] = _getISBV(_stt[i][j]);
+
+			}
+		}
+	}
+
+	void AES::_sr()
 	{
 		unsigned char temp;
 
 		// Rotate first row 1 columns to left
-		temp=stt[1][0];
-		stt[1][0]=stt[1][1];
-		stt[1][1]=stt[1][2];
-		stt[1][2]=stt[1][3];
-		stt[1][3]=temp;
+		temp=_stt[1][0];
+		_stt[1][0]=_stt[1][1];
+		_stt[1][1]=_stt[1][2];
+		_stt[1][2]=_stt[1][3];
+		_stt[1][3]=temp;
 
 		// Rotate second row 2 columns to left
-		temp=stt[2][0];
-		stt[2][0]=stt[2][2];
-		stt[2][2]=temp;
+		temp=_stt[2][0];
+		_stt[2][0]=_stt[2][2];
+		_stt[2][2]=temp;
 
-		temp=stt[2][1];
-		stt[2][1]=stt[2][3];
-		stt[2][3]=temp;
+		temp=_stt[2][1];
+		_stt[2][1]=_stt[2][3];
+		_stt[2][3]=temp;
 
 		// Rotate third row 3 columns to left
-		temp=stt[3][0];
-		stt[3][0]=stt[3][3];
-		stt[3][3]=stt[3][2];
-		stt[3][2]=stt[3][1];
-		stt[3][1]=temp;
+		temp=_stt[3][0];
+		_stt[3][0]=_stt[3][3];
+		_stt[3][3]=_stt[3][2];
+		_stt[3][2]=_stt[3][1];
+		_stt[3][1]=temp;
 	}
 
+	void AES::_isr()
+	{
+		unsigned char temp;
 
-	void AES::mc()
+		// Rotate first row 1 columns to right
+		temp=_stt[1][3];
+		_stt[1][3]=_stt[1][2];
+		_stt[1][2]=_stt[1][1];
+		_stt[1][1]=_stt[1][0];
+		_stt[1][0]=temp;
+
+		// Rotate second row 2 columns to right
+		temp=_stt[2][0];
+		_stt[2][0]=_stt[2][2];
+		_stt[2][2]=temp;
+
+		temp=_stt[2][1];
+		_stt[2][1]=_stt[2][3];
+		_stt[2][3]=temp;
+
+		// Rotate third row 3 columns to right
+		temp=_stt[3][0];
+		_stt[3][0]=_stt[3][1];
+		_stt[3][1]=_stt[3][2];
+		_stt[3][2]=_stt[3][3];
+		_stt[3][3]=temp;
+	}
+
+	void AES::_mc()
 	{
 		int i;
 		unsigned char Tmp,Tm,t;
 		for(i=0;i<4;i++)
 		{
-			t=stt[0][i];
-			Tmp = stt[0][i] ^ stt[1][i] ^ stt[2][i] ^ stt[3][i] ;
-			Tm = stt[0][i] ^ stt[1][i] ; Tm = AFW_AES_TIME(Tm); stt[0][i] ^= Tm ^ Tmp ;
-			Tm = stt[1][i] ^ stt[2][i] ; Tm = AFW_AES_TIME(Tm); stt[1][i] ^= Tm ^ Tmp ;
-			Tm = stt[2][i] ^ stt[3][i] ; Tm = AFW_AES_TIME(Tm); stt[2][i] ^= Tm ^ Tmp ;
-			Tm = stt[3][i] ^ t ; Tm = AFW_AES_TIME(Tm); stt[3][i] ^= Tm ^ Tmp ;
+			t=_stt[0][i];
+			Tmp = _stt[0][i] ^ _stt[1][i] ^ _stt[2][i] ^ _stt[3][i] ;
+			Tm = _stt[0][i] ^ _stt[1][i] ; Tm = AFW_AES_TIME(Tm); _stt[0][i] ^= Tm ^ Tmp ;
+			Tm = _stt[1][i] ^ _stt[2][i] ; Tm = AFW_AES_TIME(Tm); _stt[1][i] ^= Tm ^ Tmp ;
+			Tm = _stt[2][i] ^ _stt[3][i] ; Tm = AFW_AES_TIME(Tm); _stt[2][i] ^= Tm ^ Tmp ;
+			Tm = _stt[3][i] ^ t ; Tm = AFW_AES_TIME(Tm); _stt[3][i] ^= Tm ^ Tmp ;
 		}
 	}
 
-	void AES::c()
+	void AES::_imc()
+	{
+		int i;
+		unsigned char a,b,c,d;
+		for(i=0;i<4;i++)
+		{
+
+			a = _stt[0][i];
+			b = _stt[1][i];
+			c = _stt[2][i];
+			d = _stt[3][i];
+
+
+			_stt[0][i] = AFW_AES_MULTI(a, 0x0e) ^ AFW_AES_MULTI(b, 0x0b) ^ AFW_AES_MULTI(c, 0x0d) ^ AFW_AES_MULTI(d, 0x09);
+			_stt[1][i] = AFW_AES_MULTI(a, 0x09) ^ AFW_AES_MULTI(b, 0x0e) ^ AFW_AES_MULTI(c, 0x0b) ^ AFW_AES_MULTI(d, 0x0d);
+			_stt[2][i] = AFW_AES_MULTI(a, 0x0d) ^ AFW_AES_MULTI(b, 0x09) ^ AFW_AES_MULTI(c, 0x0e) ^ AFW_AES_MULTI(d, 0x0b);
+			_stt[3][i] = AFW_AES_MULTI(a, 0x0b) ^ AFW_AES_MULTI(b, 0x0d) ^ AFW_AES_MULTI(c, 0x09) ^ AFW_AES_MULTI(d, 0x0e);
+		}
+	}
+
+	void AES::_c()
 	{
 		int i,j,round=0;
 
@@ -267,29 +327,29 @@ namespace AuroraFW
 		{
 			for(j=0;j<4;j++)
 			{
-				stt[j][i] = in[i*4 + j];
+				_stt[j][i] = _in[i*4 + j];
 			}
 		}
 
 		// Add the First round key to the s before starting the rounds.
-		ark(0);
+		_ark(0);
 
 		// There will be Nr rounds.
 		// The first Nr-1 rounds are identical.
 		// These Nr-1 rounds are executed in the loop below.
-		for(round=1;round<nr;round++)
+		for(round=1;round<_nr;round++)
 		{
-			sb();
-			sr();
-			mc();
-			ark(round);
+			_sb();
+			_sr();
+			_mc();
+			_ark(round);
 		}
 
 		// The last round is given below.
 		// The MixColumns function is not here in the last round.
-		sb();
-		sr();
-		ark(nr);
+		_sb();
+		_sr();
+		_ark(_nr);
 
 		// The encryption process is over.
 		// Copy the s array to output array.
@@ -297,72 +357,12 @@ namespace AuroraFW
 		{
 			for(j=0;j<4;j++)
 			{
-				out[i*4+j]=stt[j][i];
+				_out[i*4+j]=_stt[j][i];
 			}
 		}
 	}
 
-
-	void AES::isb()
-	{
-		int i,j;
-		for(i=0;i<4;i++)
-		{
-			for(j=0;j<4;j++)
-			{
-				stt[i][j] = getISBV(stt[i][j]);
-
-			}
-		}
-	}
-
-	void AES::isr()
-	{
-		unsigned char temp;
-
-		// Rotate first row 1 columns to right
-		temp=stt[1][3];
-		stt[1][3]=stt[1][2];
-		stt[1][2]=stt[1][1];
-		stt[1][1]=stt[1][0];
-		stt[1][0]=temp;
-
-		// Rotate second row 2 columns to right
-		temp=stt[2][0];
-		stt[2][0]=stt[2][2];
-		stt[2][2]=temp;
-
-		temp=stt[2][1];
-		stt[2][1]=stt[2][3];
-		stt[2][3]=temp;
-
-		// Rotate third row 3 columns to right
-		temp=stt[3][0];
-		stt[3][0]=stt[3][1];
-		stt[3][1]=stt[3][2];
-		stt[3][2]=stt[3][3];
-		stt[3][3]=temp;
-	}
-	void AES::imc()
-	{
-		int i;
-		unsigned char a,b,c,d;
-		for(i=0;i<4;i++)
-		{
-
-			a = stt[0][i];
-			b = stt[1][i];
-			c = stt[2][i];
-			d = stt[3][i];
-
-
-			stt[0][i] = AFW_AES_MULTI(a, 0x0e) ^ AFW_AES_MULTI(b, 0x0b) ^ AFW_AES_MULTI(c, 0x0d) ^ AFW_AES_MULTI(d, 0x09);
-			stt[1][i] = AFW_AES_MULTI(a, 0x09) ^ AFW_AES_MULTI(b, 0x0e) ^ AFW_AES_MULTI(c, 0x0b) ^ AFW_AES_MULTI(d, 0x0d);
-			stt[2][i] = AFW_AES_MULTI(a, 0x0d) ^ AFW_AES_MULTI(b, 0x09) ^ AFW_AES_MULTI(c, 0x0e) ^ AFW_AES_MULTI(d, 0x0b);
-			stt[3][i] = AFW_AES_MULTI(a, 0x0b) ^ AFW_AES_MULTI(b, 0x0d) ^ AFW_AES_MULTI(c, 0x09) ^ AFW_AES_MULTI(d, 0x0e);
-		}
-	}
-	void AES::ic()
+	void AES::_ic()
 	{
 		int i,j,r=0;
 
@@ -371,29 +371,29 @@ namespace AuroraFW
 		{
 			for(j=0;j<4;j++)
 			{
-				stt[j][i] = in[i*4 + j];
+				_stt[j][i] = _in[i*4 + j];
 			}
 		}
 
 		// Add the First round key to the s before starting the rounds.
-		ark(nr);
+		_ark(_nr);
 
 		// There will be Nr rounds.
 		// The first Nr-1 rounds are identical.
 		// These Nr-1 rounds are executed in the loop below.
-		for(r=nr-1;r>0;r--)
+		for(r=_nr-1;r>0;r--)
 		{
-			isr();
-			isb();
-			ark(r);
-			imc();
+			_isr();
+			_isb();
+			_ark(r);
+			_imc();
 		}
 
 		// The last round is given below.
 		// The MixColumns function is not here in the last round.
-		isr();
-		isb();
-		ark(0);
+		_isr();
+		_isb();
+		_ark(0);
 
 		// The decryption process is over.
 		// Copy the s array to output array.
@@ -401,35 +401,35 @@ namespace AuroraFW
 		{
 			for(j=0;j<4;j++)
 			{
-				out[i*4+j]=stt[j][i];
+				_out[i*4+j]=_stt[j][i];
 			}
 		}
 	}
 
 	unsigned char* AES::encrypt(const unsigned char k[32],
-								const int ks,
+								const int& ks,
 								unsigned char i[16])
 	{
 		if (ks==128 || ks==192 || ks==256)
 		{
-			nk = ks / 32;
-			nr = nk + 6;
+			_nk = ks / 32;
+			_nr = _nk + 6;
 
-			/* for(int i=0;i<nk*4;i++)
+			/* for(int i=0;i<_nk*4;i++)
 			{
 				k[i]=k[i];
 				i[i]=i[i];
 			} */
-			memcpy(key, k, nk * 4);
-			memcpy(in, i, nk * 4);
+			memcpy(_key, k, _nk * 4);
+			memcpy(_in, i, _nk * 4);
 
 			// The KeyExpansion routine must be called before encryption.
-			ke();
+			_ke();
 
 			// The next function call encrypts the PlainText with the Key using AES algorithm.
-			c();
+			_c();
 
-			return out;
+			return _out;
 		}
         else
         {
@@ -445,24 +445,24 @@ namespace AuroraFW
 	** @return uchar	output block
 	*/
     unsigned char* AES::decrypt(const unsigned char k[32],
-								const int ks,
+								const int& ks,
 								unsigned char i[16])
     {
         if (ks==128 || ks==192 || ks==256)
         {
-            nk = ks / 32;
-            nr = nk + 6;
+            _nk = ks / 32;
+            _nr = _nk + 6;
 
-			memcpy(key, k, nk * 4);
-			memcpy(in, i, nk * 4);
+			memcpy(_key, k, _nk * 4);
+			memcpy(_in, i, _nk * 4);
 
             //The Key-Expansion routine must be called before the decryption routine.
-            ke();
+            _ke();
 
             // The next function call decrypts the CipherText with the Key using AES algorithm.
-            ic();
+            _ic();
 
-            return out;
+            return _out;
         }
         else
         {
