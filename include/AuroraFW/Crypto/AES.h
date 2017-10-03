@@ -16,6 +16,12 @@
 ** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
 ****************************************************************************/
 
+/**	@file AuroraFW/Crypto/AES.h
+ * AES Encryption header. Contains a class used to
+ * encrypt/decrypt AES ciphers.
+ * @since snapshot20170930
+ */
+
 #ifndef AURORAFW_CRYPTO_AES_H
 #define AURORAFW_CRYPTO_AES_H
 
@@ -34,6 +40,11 @@
 #define AFW_AES_MULTI(x,y) (((y & 1) * x) ^ ((y>>1 & 1) * AFW_AES_TIME(x)) ^ ((y>>2 & 1) * AFW_AES_TIME(AFW_AES_TIME(x))) ^ ((y>>3 & 1) * AFW_AES_TIME(AFW_AES_TIME(AFW_AES_TIME(x)))) ^ ((y>>4 & 1) * AFW_AES_TIME(AFW_AES_TIME(AFW_AES_TIME(AFW_AES_TIME(x))))))
 
 namespace AuroraFW {
+
+	/**
+	 * A class used to encrypt/decrypt AES ciphers.
+	 * @since 20170930
+	 */
 	class AES {
 	private:
 		static int _nr, _nk;
