@@ -25,7 +25,7 @@
 #ifndef AURORAFW_CRYPTO_AES_H
 #define AURORAFW_CRYPTO_AES_H
 
-#include <AuroraFW/TLib/Memory.h>
+#include <AuroraFW/STDL/Memory.h>
 
 /*
  * The number of columns comprising a _s in AES.

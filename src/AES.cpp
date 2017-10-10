@@ -18,10 +18,11 @@
 
 #include <AuroraFW/Crypto/AES.h>
 #include <AuroraFW/CLI/Log.h>
-#include <AuroraFW/TLib/Memory.h>
-#include <AuroraFW/TLib/Target/CCPlusPlus.h>
+#include <AuroraFW/STDL/Memory.h>
+#include <AuroraFW/STDL/Target/Language.h>
+#include <AuroraFW/STDL/STL/IOStream.h>
+
 #ifdef AFW_TARGET_CXX
-#include <iostream>
 #include <cstdlib>
 #elif defined(AFW_TARGET_CC)
 #include <stdlib.h>
