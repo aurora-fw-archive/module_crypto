@@ -210,7 +210,6 @@ namespace AuroraFW
 			for(int j=0;j<4;j++)
 			{
 				_stt[i][j] = _getSBV(_stt[i][j]);
-
 			}
 		}
 	}
@@ -223,7 +222,6 @@ namespace AuroraFW
 			for(j=0;j<4;j++)
 			{
 				_stt[i][j] = _getISBV(_stt[i][j]);
-
 			}
 		}
 	}
@@ -305,7 +303,6 @@ namespace AuroraFW
 		unsigned char a,b,c,d;
 		for(i=0;i<4;i++)
 		{
-
 			a = _stt[0][i];
 			b = _stt[1][i];
 			c = _stt[2][i];
