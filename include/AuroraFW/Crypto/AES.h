@@ -25,6 +25,7 @@
 #ifndef AURORAFW_CRYPTO_AES_H
 #define AURORAFW_CRYPTO_AES_H
 
+#include <AuroraFW/Global.h>
 #include <AuroraFW/STDL/Memory.h>
 
 /*
@@ -45,7 +46,7 @@ namespace AuroraFW {
 	 * A class used to encrypt/decrypt AES ciphers.
 	 * @since 20170930
 	 */
-	class AES {
+	class AFW_EXPORT AES {
 	private:
 		static int _nr, _nk;
 
