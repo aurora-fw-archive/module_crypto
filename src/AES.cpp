@@ -19,7 +19,7 @@
 #include <AuroraFW/Crypto/AES.h>
 #include <AuroraFW/CLI/Log.h>
 #include <AuroraFW/STDL/Memory.h>
-#include <AuroraFW/STDL/Target/Language.h>
+#include <AuroraFW/CoreLib/Target/Compiler.h>
 #include <AuroraFW/STDL/STL/IOStream.h>
 
 #ifdef AFW_TARGET_CXX
