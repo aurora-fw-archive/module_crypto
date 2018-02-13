@@ -18,7 +18,7 @@
 
 #include <AuroraFW/Crypto/AES.h>
 #include <AuroraFW/CLI/Log.h>
-#include <AuroraFW/STDL/Memory.h>
+#include <AuroraFW/STDL/LibC/String.h>
 #include <AuroraFW/CoreLib/Target/Compiler.h>
 #include <AuroraFW/STDL/STL/IOStream.h>
 
@@ -418,8 +418,8 @@ namespace AuroraFW
 				k[i]=k[i];
 				i[i]=i[i];
 			} */
-			afw::memcpy(_key, k, _nk * 4);
-			afw::memcpy(_in, i, _nk * 4);
+			memcpy(_key, k, _nk * 4);
+			memcpy(_in, i, _nk * 4);
 
 			// The KeyExpansion routine must be called before encryption.
 			_ke();
@@ -451,8 +451,8 @@ namespace AuroraFW
 			_nk = ks / 32;
 			_nr = _nk + 6;
 
-			afw::memcpy(_key, k, _nk * 4);
-			afw::memcpy(_in, i, _nk * 4);
+			memcpy(_key, k, _nk * 4);
+			memcpy(_in, i, _nk * 4);
 
 			//The Key-Expansion routine must be called before the decryption routine.
 			_ke();

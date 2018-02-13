@@ -26,7 +26,13 @@
 #define AURORAFW_CRYPTO_AES_H
 
 #include <AuroraFW/Global.h>
-#include <AuroraFW/STDL/Memory.h>
+#if(AFW_TARGET_PRAGMA_ONCE_SUPPORT)
+	#pragma once
+#endif
+
+#include <AuroraFW/Internal/Config.h>
+
+#include <AuroraFW/STDL/LibC/String.h>
 
 /*
  * The number of columns comprising a _s in AES.
@@ -46,7 +52,7 @@ namespace AuroraFW {
 	 * A class used to encrypt/decrypt AES ciphers.
 	 * @since 20170930
 	 */
-	class AFW_EXPORT AES {
+	class AFW_API AES {
 	private:
 		static int _nr, _nk;
 
