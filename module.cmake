@@ -23,7 +23,7 @@ endif()
 include_directories(${AURORAFW_MODULE_CRYPTO_DIR}/include)
 
 add_library (aurorafw-crypto SHARED ${AURORAFW_MODULE_CRYPTO_SOURCE_DIR}/AES.cpp)
-aurora_add_library_target(aurorafw-crypto SHARED)
+aurorafw_add_library_target(aurorafw-crypto SHARED)
 
 target_link_libraries(aurorafw-crypto aurorafw-cli)
 
